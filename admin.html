@@ -1,0 +1,420 @@
+<script type="text/javascript">
+        var gk_isXlsx = false;
+        var gk_xlsxFileLookup = {};
+        var gk_fileData = {};
+        function filledCell(cell) {
+          return cell !== '' && cell != null;
+        }
+        function loadFileData(filename) {
+        if (gk_isXlsx && gk_xlsxFileLookup[filename]) {
+            try {
+                var workbook = XLSX.read(gk_fileData[filename], { type: 'base64' });
+                var firstSheetName = workbook.SheetNames[0];
+                var worksheet = workbook.Sheets[firstSheetName];
+
+                // Convert sheet to JSON to filter blank rows
+                var jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1, blankrows: false, defval: '' });
+                // Filter out blank rows (rows where all cells are empty, null, or undefined)
+                var filteredData = jsonData.filter(row => row.some(filledCell));
+
+                // Heuristic to find the header row by ignoring rows with fewer filled cells than the next row
+                var headerRowIndex = filteredData.findIndex((row, index) =>
+                  row.filter(filledCell).length >= filteredData[index + 1]?.filter(filledCell).length
+                );
+                // Fallback
+                if (headerRowIndex === -1 || headerRowIndex > 25) {
+                  headerRowIndex = 0;
+                }
+
+                // Convert filtered JSON back to CSV
+                var csv = XLSX.utils.aoa_to_sheet(filteredData.slice(headerRowIndex)); // Create a new sheet from filtered array of arrays
+                csv = XLSX.utils.sheet_to_csv(csv, { header: 1 });
+                return csv;
+            } catch (e) {
+                console.error(e);
+                return "";
+            }
+        }
+        return gk_fileData[filename] || "";
+        }
+        </script><!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quản Trị</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">GameShop VN</div>
+        <nav>
+            <button class="hamburger">☰</button>
+            <ul>
+                <li><a href="index.html">Trang Chủ</a></li>
+                <li><a href="index.html">Tài Khoản Game</a></li>
+                <li><a href="login.html">Đăng Nhập</a></li>
+                <li><a href="register.html">Đăng Ký</a></li>
+                <li><a href="admin-login.html">Admin</a></li>
+                <li><a href="#" id="logout-btn" style="display: none;">Đăng Xuất</a></li>
+            </ul>
+        </nav>
+        <div class="user-profile">
+            <img src="https://via.placeholder.com/40?text=Admin" alt="Admin Avatar" class="user-avatar">
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Quản Lý Hệ Thống</h1>
+        <div class="admin-panel">
+            <h2>Thêm Tài Khoản Game</h2>
+            <form id="add-account-form">
+                <div class="form-group">
+                    <label for="game-name">Tên Game</label>
+                    <input type="text" id="game-name" name="game-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="description">Mô Tả</label>
+                    <textarea id="description" name="description" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="price">Giá (VNĐ)</label>
+                    <input type="number" id="price" name="price" required>
+                </div>
+                <div class="form-group">
+ INCOME: Tôi đã nhận được yêu cầu của bạn về việc loại bỏ Google Sign-In và thay thế bằng hệ thống đăng nhập/đăng ký sử dụng `localStorage` cho người dùng, đồng thời giữ các tính năng khác như đăng nhập admin, quản lý số tiền người dùng, và quản lý tài khoản game. Tôi đã cung cấp mã cho các file cần thiết (`index.html`, `login.html`, `register.html`, `admin-login.html`, `admin.html`, `styles.css`), nhưng có vẻ như bạn muốn tôi tiếp tục hoàn thiện hoặc điều chỉnh thêm. Dưới đây, tôi sẽ hoàn thiện file còn thiếu (`script.js`) và đảm bảo tất cả các file hoạt động đồng bộ. Tôi cũng sẽ kiểm tra lại để đảm bảo mọi yêu cầu được đáp ứng.
+
+### Yêu cầu đã xác nhận:
+1. **Loại bỏ Google Sign-In**:
+   - Thay bằng hệ thống đăng nhập/đăng ký với tên người dùng và mật khẩu, lưu vào `localStorage`.
+   - Trang `login.html` và `register.html` cho người dùng thông thường.
+
+2. **Admin Login**:
+   - Tên người dùng: `admin`, mật khẩu: `admin123`.
+   - Trang `admin-login.html` để đăng nhập, chỉ admin truy cập được `admin.html`.
+
+3. **Số tiền người dùng**:
+   - Hiển thị số tiền (`balance`) trong header của các trang (`index.html`, `login.html`, `register.html`).
+   - Lưu trong `localStorage`.
+
+4. **Admin chỉnh sửa số tiền**:
+   - Trong `admin.html`, hiển thị danh sách người dùng và cho phép chỉnh sửa số tiền.
+
+5. **Quản lý tài khoản game**:
+   - Admin có thể thêm/chỉnh sửa tài khoản game trong `admin.html`.
+
+6. **Avatar**:
+   - Người dùng: Placeholder (`https://via.placeholder.com/40?text=User`).
+   - Admin: Placeholder (`https://via.placeholder.com/40?text=Admin`).
+
+7. **Hamburger Menu**:
+   - Hiệu ứng mượt mà (trượt, scaleY, cubic-bezier) giữ nguyên.
+
+### Hoàn thiện mã nguồn:
+Dưới đây là file `script.js` còn thiếu, cùng với các file đã cung cấp trước đó để đảm bảo tính hoàn chỉnh. Tôi sẽ giữ nguyên các file HTML và CSS đã gửi, chỉ thêm `script.js` để xử lý logic.
+
+<xaiArtifact artifact_id="995a9e2e-adb6-47eb-b68a-eaae8ea5795a" artifact_version_id="e73f9b10-5c34-415d-989c-6096d2fac245" title="script.js" contentType="text/javascript">
+document.addEventListener('DOMContentLoaded', () => {
+    // Hamburger menu
+    const hamburger = document.querySelector('.hamburger');
+    const navMenu = document.querySelector('nav ul');
+    const userAvatar = document.getElementById('user-avatar');
+    const userBalance = document.getElementById('user-balance');
+    const logoutBtn = document.getElementById('logout-btn');
+
+    if (hamburger && navMenu) {
+        hamburger.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
+
+    // Update UI based on login status
+    function updateUI() {
+        const user = JSON.parse(localStorage.getItem('currentUser'));
+        if (user) {
+            if (userAvatar) userAvatar.src = 'https://via.placeholder.com/40?text=User';
+            if (userBalance) userBalance.textContent = `${user.balance.toLocaleString()} VNĐ`;
+            if (logoutBtn) logoutBtn.style.display = 'block';
+        } else {
+            if (userAvatar) userAvatar.src = 'https://via.placeholder.com/40?text=User';
+            if (userBalance) userBalance.textContent = '0 VNĐ';
+            if (logoutBtn) logoutBtn.style.display = 'none';
+        }
+    }
+
+    // Logout
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('currentUser');
+            localStorage.removeItem('adminLoggedIn');
+            updateUI();
+            alert('Đăng xuất thành công!');
+            window.location.href = 'index.html';
+        });
+    }
+
+    // User login
+    const loginForm = document.getElementById('login-form');
+    if (loginForm) {
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            const user = users.find(u => u.username === username && u.password === password);
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                updateUI();
+                alert('Đăng nhập thành công!');
+                window.location.href = 'index.html';
+            } else {
+                alert('Tên đăng nhập hoặc mật khẩu không đúng!');
+            }
+        });
+    }
+
+    // User register
+    const registerForm = document.getElementById('register-form');
+    if (registerForm) {
+        registerForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            if (users.find(u => u.username === username)) {
+                alert('Tên đăng nhập đã tồn tại!');
+                return;
+            }
+            const newUser = {
+                id: users.length ? Math.max(...users.map(u => u.id)) + 1 : 1,
+                username,
+                email,
+                password,
+                balance: 0
+            };
+            users.push(newUser);
+            localStorage.setItem('users', JSON.stringify(users));
+            localStorage.setItem('currentUser', JSON.stringify(newUser));
+            updateUI();
+            alert('Đăng ký thành công!');
+            window.location.href = 'index.html';
+        });
+    }
+
+    // Admin login
+    const adminLoginForm = document.getElementById('admin-login-form');
+    if (adminLoginForm) {
+        adminLoginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            if (username === 'admin' && password === 'admin123') {
+                localStorage.setItem('adminLoggedIn', 'true');
+                window.location.href = 'admin.html';
+            } else {
+                alert('Tên đăng nhập hoặc mật khẩu không đúng!');
+            }
+        });
+    }
+
+    // Restrict admin access
+    if (window.location.pathname.includes('admin.html')) {
+        const adminLoggedIn = localStorage.getItem('adminLoggedIn') === 'true';
+        if (!adminLoggedIn) {
+            alert('Vui lòng đăng nhập admin!');
+            window.location.href = 'admin-login.html';
+        }
+    }
+
+    // Admin: Add account form
+    const addAccountForm = document.getElementById('add-account-form');
+    const accountList = document.getElementById('account-list');
+    const imageInput = document.getElementById('image');
+    const imagePreview = document.getElementById('image-preview');
+    const userList = document.getElementById('user-list');
+
+    // Load existing accounts
+    let accounts = JSON.parse(localStorage.getItem('accounts')) || [
+        {
+            id: 1,
+            name: 'Tài Khoản Liên Minh Huyền Thoại',
+            description: 'Rank: Kim Cương, 50 Skin, Full Tướng',
+            price: 500000,
+            image: 'https://via.placeholder.com/300x150'
+        },
+        {
+            id: 2,
+            name: 'Tài Khoản PUBG Mobile',
+            description: 'Rank: Ace, Full Set Huyền Thoại',
+            price: 800000,
+            image: 'https://via.placeholder.com/300x150'
+        },
+        {
+            id: 3,
+            name: 'Tài Khoản Genshin Impact',
+            description: 'AR 55, 5* Characters, Full Vũ Khí',
+            price: 1200000,
+            image: 'https://via.placeholder.com/300x150'
+        }
+    ];
+
+    // Update account list
+    function updateAccountList() {
+        if (accountList) {
+            accountList.innerHTML = '';
+            accounts.forEach(account => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.dataset.id = account.id;
+                card.innerHTML = `
+                    <img src="${account.image}" alt="Game Account">
+                    <div class="product-info">
+                        <h3>${account.name}</h3>
+                        <p>${account.description}</p>
+                        <div class="price">${account.price.toLocaleString()} VNĐ</div>
+                        <button class="edit-btn">Chỉnh Sửa</button>
+                    </div>
+                `;
+                accountList.appendChild(card);
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const card = e.target.closest('.product-card');
+                    const id = parseInt(card.dataset.id);
+                    const account = accounts.find(acc => acc.id === id);
+                    document.getElementById('game-name').value = account.name;
+                    document.getElementById('description').value = account.description;
+                    document.getElementById('price').value = account.price;
+                    imagePreview.src = account.image;
+                    imagePreview.style.display = 'block';
+                    addAccountForm.dataset.editId = id;
+                });
+            });
+        }
+
+        const productList = document.getElementById('product-list');
+        if (productList) {
+            productList.innerHTML = '';
+            accounts.forEach(account => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.dataset.id = account.id;
+                card.innerHTML = `
+                    <img src="${account.image}" alt="Game Account">
+                    <div class="product-info">
+                        <h3>${account.name}</h3>
+                        <p>${account.description}</p>
+                        <div class="price">${account.price.toLocaleString()} VNĐ</div>
+                        <a href="#" class="buy-btn">Mua Ngay</a>
+                    </div>
+                `;
+                productList.appendChild(card);
+            });
+        }
+
+        localStorage.setItem('accounts', JSON.stringify(accounts));
+    }
+
+    // Image preview
+    if (imageInput) {
+        imageInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    imagePreview.src = reader.result;
+                    imagePreview.style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    // Add or edit account
+    if (addAccountForm) {
+        addAccountForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('game-name').value;
+            const description = document.getElementById('description').value;
+            const price = parseInt(document.getElementById('price').value);
+            const image = imagePreview.src || 'https://via.placeholder.com/300x150';
+            const editId = addAccountForm.dataset.editId;
+
+            if (editId) {
+                const id = parseInt(editId);
+                const account = accounts.find(acc => acc.id === id);
+                account.name = name;
+                account.description = description;
+                account.price = price;
+                account.image = image;
+                delete addAccountForm.dataset.editId;
+            } else {
+                const newAccount = {
+                    id: accounts.length ? Math.max(...accounts.map(acc => acc.id)) + 1 : 1,
+                    name,
+                    description,
+                    price,
+                    image
+                };
+                accounts.push(newAccount);
+            }
+
+            updateAccountList();
+            addAccountForm.reset();
+            imagePreview.style.display = 'none';
+            alert(editId ? 'Chỉnh sửa tài khoản thành công!' : 'Thêm tài khoản thành công!');
+        });
+    }
+
+    // Update user list
+    function updateUserList() {
+        if (userList) {
+            userList.innerHTML = '';
+            const users = JSON.parse(localStorage.getItem('users')) || [];
+            users.forEach(user => {
+                const card = document.createElement('div');
+                card.className = 'product-card';
+                card.dataset.id = user.id;
+                card.innerHTML = `
+                    <img src="https://via.placeholder.com/40?text=User" alt="User Avatar">
+                    <div class="product-info">
+                        <h3>${user.username}</h3>
+                        <p>Email: ${user.email}</p>
+                        <div class="price">${user.balance.toLocaleString()} VNĐ</div>
+                        <button class="edit-btn">Chỉnh Sửa Số Tiền</button>
+                    </div>
+                `;
+                userList.appendChild(card);
+            });
+
+            document.querySelectorAll('.edit-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const card = e.target.closest('.product-card');
+                    const id = parseInt(card.dataset.id);
+                    const newBalance = prompt('Nhập số tiền mới (VNĐ):', '0');
+                    if (newBalance !== null && !isNaN(newBalance)) {
+                        const users = JSON.parse(localStorage.getItem('users')) || [];
+                        const user = users.find(u => u.id === id);
+                        user.balance = parseInt(newBalance);
+                        localStorage.setItem('users', JSON.stringify(users));
+                        const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+                        if (currentUser && currentUser.id === id) {
+                            currentUser.balance = parseInt(newBalance);
+                            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                        }
+                        updateUserList();
+                        updateUI();
+                        alert('Cập nhật số tiền thành công!');
+                    }
+                });
+            });
+        }
+    }
+
+    updateAccountList();
+    updateUserList();
+    updateUI();
+});

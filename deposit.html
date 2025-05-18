@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nạp Tiền</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <div class="logo">GameShop VN</div>
+        <nav>
+            <button class="hamburger">☰</button>
+            <ul>
+                <li><a href="index.html">Trang Chủ</a></li>
+                <li><a href="index.html">Tài Khoản Game</a></li>
+                <li><a href="login.html">Đăng Nhập</a></li>
+                <li><a href="register.html">Đăng Ký</a></li>
+                <li><a href="deposit.html">Nạp Tiền</a></li>
+                <li><a href="admin-login.html">Admin</a></li>
+                <li><a href="#" id="logout-btn" style="display: none;">Đăng Xuất</a></li>
+            </ul>
+        </nav>
+        <div class="user-profile">
+            <div class="user-info">
+                <img src="https://via.placeholder.com/40?text=User" alt="User Avatar" class="user-avatar" id="user-avatar">
+                <span id="user-balance" class="user-balance">0 VNĐ</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <h1>Nạp Tiền</h1>
+        <div class="form-container">
+            <h2>Chọn số tiền nạp trực tiếp</h2>
+            <div class="deposit-options">
+                <button class="deposit-btn" data-amount="100000">100.000 VNĐ</button>
+                <button class="deposit-btn" data-amount="500000">500.000 VNĐ</button>
+                <button class="deposit-btn" data-amount="1000000">1.000.000 VNĐ</button>
+            </div>
+
+            <h2>Nạp bằng thẻ cào điện thoại</h2>
+            <div class="card-section">
+                <select id="card-provider" class="form-group">
+                    <option value="">Chọn nhà mạng</option>
+                    <option value="viettel">Viettel</option>
+                    <option value="mobifone">Mobifone</option>
+                    <option value="vinaphone">Vinaphone</option>
+                    <option value="vietnamobile">Vietnamobile</option>
+                    <option value="gmobile">Gmobile</option>
+                    <option value="zing">Zing</option>
+                    <option value="gate">Gate</option>
+                    <option value="vcoin">Vcoin</option>
+                </select>
+                <select id="card-amount" class="form-group">
+                    <option value="">Chọn mệnh giá</option>
+                    <option value="10000">10.000 VNĐ</option>
+                    <option value="20000">20.000 VNĐ</option>
+                    <option value="50000">50.000 VNĐ</option>
+                    <option value="100000">100.000 VNĐ</option>
+                    <option value="200000">200.000 VNĐ</option>
+                    <option value="300000">300.000 VNĐ</option>
+                    <option value="500000">500.000 VNĐ</option>
+                </select>
+                <input type="text" id="card-code" class="form-group" placeholder="Mã thẻ">
+                <input type="text" id="card-serial" class="form-group" placeholder="Số serial">
+                <button id="submit-card-btn" class="submit-btn">Nạp thẻ</button>
+            </div>
+
+            <h2>Nạp bằng VietQR (Techcombank)</h2>
+            <div class="vietqr-section">
+                <select id="vietqr-amount" class="form-group">
+                    <option value="">Chọn số tiền</option>
+                    <option value="10000">10.000 VNĐ</option>
+                    <option value="20000">20.000 VNĐ</option>
+                    <option value="50000">50.000 VNĐ</option>
+                    <option value="100000">100.000 VNĐ</option>
+                    <option value="200000">200.000 VNĐ</option>
+                    <option value="300000">300.000 VNĐ</option>
+                    <option value="500000">500.000 VNĐ</option>
+                </select>
+                <button id="generate-qr-btn" class="submit-btn">Hiển thị mã VietQR</button>
+                <div class="vietqr-info">
+                    <p><strong>Người nhận:</strong> Võ Trường Sơn</p>
+                    <p><strong>Ngân hàng:</strong> Techcombank</p>
+                    <p><strong>Số tài khoản:</strong> 1905200703</p>
+                    <p><strong>Nội dung:</strong> Nạp tiền cho <span id="qr-username"></span> - <span id="qr-amount"></span></p>
+                </div>
+                <img id="qrcode" src="https://api.vietqr.io/image/190422-1234567890-WkiCOwp.jpg?accountName=VO%20TRUONG%20SON" alt="VietQR Code" style="display: none; margin: 1rem auto; max-width: 200px;">
+                <button id="confirm-qr-btn" class="submit-btn" style="display: none;">Xác nhận quét mã</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 GameShop VN. All rights reserved.</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+                      </html>
